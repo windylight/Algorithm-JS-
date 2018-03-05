@@ -1,0 +1,83 @@
+<meta charset="utf-8">
+<span>请输入要排序的数字，以‘;’分割</span>
+<input type="text" onkeyup="value=value.replace(/[^0-9\;]/g,'')" name='sum'>
+<input type="button" value="计算" onclick="sort()">
+</br>
+<div id='num'></div>
+<div id='show'></div>
+<script>
+var count=0;
+//清理输入的数据
+function clean(arr){
+	for(var i = 0; i <arr.length; i++) {
+	if(arr[i] == '') {
+	    arr.splice(i,1);
+	    i = i-1; 
+	  }
+	}
+	return arr;
+}
+//全排序总数递归算法
+function fac(n){
+    return (n <= 1) ? 1 : n * fac( n-1 );
+}
+//全排序算的执行
+function sort(){
+	count=0;
+	document.getElementById("show").innerHTML='';
+	var x=document.getElementsByName("sum")[0].value.split(';');
+	x=clean(x);
+    num=fac(parseInt(x.length));
+	document.getElementById("show").innerHTML='<p>你输入的数组为：'+x+'   共有'+num+'种排序方式</p>'
+	perm(x);	
+}
+//全排序的交换
+function swap(arr,i,n) {  
+    var temp=arr[i];  
+    arr[i]=arr[n];  
+    arr[n]=temp;  
+}
+//全排序的显示 
+function appChild(a){  
+        var para=document.createElement("p");  
+        var node=document.createTextNode(a);   
+        para.appendChild(node);  
+        var element=document.getElementById("show");  
+        element.appendChild(para);  
+}    
+function show(arr) { 
+	var sss='('+ ++count + ')'+arr.join(" ");
+	appChild(sss);
+}  
+//全排序的算法实现
+// function perm(arr) {  
+//     function foo(n) { //对第n个位置选择元素  
+//         for(var i=n;i<arr.length;i++) {  //将每一个数都放一次到n位置
+//             swap(arr,i,n); 
+//             if(n+1==arr.length-1){//判断带排序的个数是否只剩一个
+//                show(arr); //显示一组结果
+//             }else{
+//                 foo(n+1) //对n+1位后个数进行全排序
+//             }   
+//             swap(arr,i,n);   //返回到交换前的原始状态
+//         }  
+//     }
+//     foo(0);  //从第0个位置的数开始
+// } 
+function perm(arr) {  
+    function foo(n) { //对第n个位置选择元素  
+        for(var i=0;i<=n;i++) {  //将每一个数都放一次到n位置
+            swap(arr,i,n); 
+            if(i==n){//判断带排序的个数是否只剩一个
+                show(arr);   
+            }else{
+                foo(n-1); //对n+1位后个数进行全排序
+            } 
+            swap(arr,i,n);   //返回到交换前的原始状态
+        }  
+    }
+    n=arr.length-1;
+    console.log(n);
+    foo(n);  //从第0个位置的数开始
+} 
+</script>

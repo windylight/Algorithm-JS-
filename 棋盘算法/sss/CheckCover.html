@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title></title>
+    <style type="text/css">
+    #panel {
+        width: auto;
+    }
+
+    .box {
+        width: 48px;
+        height: 48px;
+        margin: 4px;
+        float: left;
+        border: 1px solid #444;
+        display: inline-block;
+    }
+
+    .color {
+        background: #000;
+    }
+
+    </style>
+</head>
+<body>
+<p>请输入要棋盘全覆盖算法的参数（a,b,n）</p>
+<p>a为特定格子的上边距，b为特定格子的左边距，从0起</p>
+<p>n为棋盘的规模大小，边距为2^n</p>
+<p>请依次输入，以‘;’分割</p>
+<input type="text" onkeyup="value=value.replace(/[^0-9\;]/g,'')" name='sum'>
+<input type="button" value="生成棋盘" onclick="Creat()">
+<input type="button" value="生成棋盘覆盖" onclick="Cover()">
+<input type="button" value="生成棋盘覆盖数组" onclick="Cover_arr()">
+<div id="panel"></div>
+<div id="panel_num"></div>
+<script type="text/javascript" src="js/jquery.min.js"></script>
+<script>
+function creatbox(num, a, b) {
+    var p = $("#panel");
+    n = Math.pow(2, num);
+    var str = "<div class='box'></div>"
+    var str2 = "<div class='box color'></div>"
+    for (i = 0; i < n; i++) {
+        for (j = 0; j < n; j++) {
+            if (i == a && j == b) {
+                p.append(str2);
+            } else {
+                p.append(str);
+            }
+        }
+        p.append("<div style='clear:both'></div>");
+    }
+}
+
+function setcolor() {
+    return '#' +
+        (function(color) {
+            return (color += '0123456789abcdef' [Math.floor(Math.random() * 16)]) && (color.length == 6) ? color : arguments.callee(color);
+        })('');
+}
+
+function f1(num, i) {
+    n = Math.pow(2, num);
+    return [i, i + 1, i + n, setcolor()];
+}
+
+function f2(num, i) {
+    n = Math.pow(2, num);
+    return [i, i + 1, i+n+1, setcolor()];
+}
+
+function f3(num, i) {
+    n = Math.pow(2, num);
+    return [i+1, i+1+n, i + n, setcolor()];
+}
+
+function f4(num, i) {
+    n = Math.pow(2, num);
+    return [i, i + 1+n, i + n, setcolor()];
+}
+
+function InArray(n, arr) {
+    for (var j = 0; j < arr.length - 1; j++) {
+        if (arr[j] == n) {
+            return arr[3];
+        }
+    }
+}
+function LinkCheck(a,b,n,k){
+    // console.log(a+'/'+b);
+    // nn=Math.pow(2, n);
+    c = a * nn + b;
+    if(k==1){
+        l_arr=f1(n,c);               
+    }else if(k==2){
+        l_arr=f2(n,c);
+    }else if(k==3){
+        l_arr=f3(n,c);
+    }else if(k==4){
+        l_arr=f4(n,c);
+    }
+    // console.log(l_arr);
+    PinkColor2(l_arr);
+}
+
+function CheckCover(num, a, b, kind, left, top,n){
+    var l_arr=[];
+    nn=Math.pow(2, n);
+    if(num==1){
+        no = a * nn + b;
+        c = top * nn + left;
+        if(kind==1){
+            l_arr=f1(n,c);
+            for(var i=0;InArray(no, l_arr);i<3){
+                if(i==0){
+                    l_arr=f2(n,c);               
+                }else if(i==1){
+                    l_arr=f3(n,c);
+                }else if(i==2){
+                    l_arr=f4(n,c);
+                }
+                i++;
+            }
+            PinkColor(n, a, b, l_arr);
+        }else if(kind==2){
+            l_arr=f1(n,c);
+            for(var i=0;InArray(no, l_arr);i<3){
+                if(i==0){
+                    l_arr=f2(n,c);               
+                }else if(i==1){
+                    l_arr=f3(n,c);
+                }else if(i==2){
+                    l_arr=f4(n,c);
+                }
+                i++;
+            }
+            PinkColor(n, a, b, l_arr);
+        }else if(kind==3){
+            l_arr=f1(n,c);
+            for(var i=0;InArray(no, l_arr);i<3){
+                if(i==0){
+                    l_arr=f2(n,c);               
+                }else if(i==1){
+                    l_arr=f3(n,c);
+                }else if(i==2){
+                    l_arr=f4(n,c);
+                }
+                i++;
+            }
+            PinkColor(n, a, b, l_arr);
+        }else if(kind==4){
+            l_arr=f1(n,c);
+            for(var i=0;InArray(no, l_arr);i<3){
+                if(i==0){
+                    l_arr=f2(n,c);               
+                }else if(i==1){
+                    l_arr=f3(n,c);
+                }else if(i==2){
+                    l_arr=f4(n,c);
+                }
+                i++;
+            }
+            PinkColor(n, a, b, l_arr);
+        }
+    }else{
+        var c=Math.pow(2,num-1)-1;
+        var d=Math.pow(2,num-1);
+        // console.log(c+'/'+d);
+        if(a<top+d&&b<left+d){//下左
+            CheckCover(num-1, a, b, 1, left+0, top+0,n);
+            CheckCover(num-1, top+c, left+d,2, left+d,  top+0, n);
+            CheckCover(num-1, top+d, left+d,3, left+d,  top+d, n);
+            CheckCover(num-1, top+d, left+c,4, left+0,  top+d, n);
+            LinkCheck(top+c,left+c, n,3);
+            // console.log(111);
+        }else if(a<top+d&&b>=left+d){//下右
+            CheckCover(num-1, top+c, left+c, 1, left+0, top+0,n);
+            CheckCover(num-1, a, b,2, left+d,  top+0, n);
+            CheckCover(num-1, top+d, left+d,3, left+d,  top+d, n);
+            CheckCover(num-1, top+d, left+c,4, left+0,  top+d, n);
+            LinkCheck(top+c,left+c,n,4);
+            // console.log(222);            
+        }else if(a>=top+d&&b<left+d){//上左
+            CheckCover(num-1, top+c, left+c, 1, left+0, top+0,n);
+            CheckCover(num-1, top+c, left+d,2, left+d,  top+0, n);
+            CheckCover(num-1, top+d, left+d,3, left+d,  top+d, n);
+            CheckCover(num-1, a, b,4, left+0,  top+d, n);
+            LinkCheck( top+c,left+c,n,2); 
+            // console.log(333);         
+        }else if(a>=top+d&&b>=left+d){//上右
+            CheckCover(num-1, top+c, left+c, 1, left+0, top+0,n);
+            CheckCover(num-1, top+c, left+d,2, left+d,  top+0, n);
+            CheckCover(num-1, a, b,3, left+d,  top+d, n);
+            CheckCover(num-1, top+d, left+c,4, left+0,  top+d, n);
+            LinkCheck(top+c,left+c,n,1);
+            // console.log(444);      
+        }
+
+    }
+}
+
+function PinkColor(num, a, b, arr) {
+    n = Math.pow(2, num);
+    for (var i = 0; i < n; i++) {
+        for (var j = 0; j < n; j++) {
+            if (i == a && j == b) {} else {
+                c = i * n + j;
+                if (InArray(c, arr)) {
+                    // console.log(InArray(c, arr));
+                    $(".box:eq(" + c + ")").css("background",InArray(c, arr));
+                    $("#panel_num").append("<p>"+arr+"</p>");
+                }
+            }
+
+        }
+    }
+}
+function PinkColor2( arr) {
+    for (var i = 0; i < n; i++) {
+        for (var j = 0; j < n; j++) {
+            c = i * n + j;
+            if (InArray(c, arr)) {
+                // console.log(InArray(c, arr));
+                $(".box:eq(" + c + ")").css("background",InArray(c, arr));
+                $("#panel_num").append("<p>"+arr+"</p>");
+            }
+        }
+    }
+}
+//清理输入的数据
+function clean(arr){
+    for(var i = 0; i <arr.length; i++) {
+    if(arr[i] == '') {
+        arr.splice(i,1);
+        i = i-1; 
+      }
+    }
+    return arr;
+}
+function Cover(){
+    $("#panel").html('');
+    $("#panel_num").html('');
+    var x=document.getElementsByName("sum")[0].value.split(';');
+    x=clean(x);
+    var a=parseInt(x[0]);
+    var b=parseInt(x[1]);
+    var n=parseInt(x[2]);
+    if(a>=Math.pow(2,n)||b>=Math.pow(2,n)||a<0||b<0){
+        alert("特殊位置设置无效，超出棋盘范围")
+    }else{
+        creatbox(n,a,b);
+        CheckCover(n,a,b,0,0,0,n);         
+    }
+    $("#panel_num").html('');
+}
+function Creat(){
+    $("#panel").html('');
+    $("#panel_num").html('');
+    var x=document.getElementsByName("sum")[0].value.split(';');
+    x=clean(x);
+    var a=parseInt(x[0]);
+    var b=parseInt(x[1]);
+    var n=parseInt(x[2]);
+    if(a>=Math.pow(2,n)||b>=Math.pow(2,n)||a<0||b<0){
+        alert("特殊位置设置无效，超出棋盘范围")
+    }else{
+        creatbox(n,a,b);      
+    }
+}
+function Cover_arr(){
+    $("#panel").html('');
+    $("#panel_num").html('');
+    var x=document.getElementsByName("sum")[0].value.split(';');
+    x=clean(x);
+    var a=parseInt(x[0]);
+    var b=parseInt(x[1]);
+    var n=parseInt(x[2]);
+    if(a>=Math.pow(2,n)||b>=Math.pow(2,n)||a<0||b<0){
+        alert("特殊位置设置无效，超出棋盘范围")
+    }else{
+        creatbox(n,a,b);
+        CheckCover(n,a,b,0,0,0,n);         
+    }
+    $("#panel").html('');
+}
+</script>
+
+</body>
+</html>
+
+
+
